@@ -16,7 +16,9 @@ const PORT = process.env.PORT || 3000;
 // ============================================================
 // Encrypted Config System
 // ============================================================
-const CONFIG_PATH = join(__dirname, '.config.enc');
+const CONFIG_PATH = process.env.VERCEL
+  ? '/tmp/.config.enc'
+  : join(__dirname, '.config.enc');
 const CONFIG_ENCRYPTION_KEY = crypto.scryptSync('N00b-S3cret-K3y-2026!', 'salt-noob', 32);
 const CONFIG_IV_LEN = 16;
 
@@ -184,7 +186,8 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (req.method === 'POST') {
     const origin = req.get('origin');
-    if (origin && !origin.includes('localhost:' + PORT)) {
+    const host = req.get('host');
+    if (origin && host && !origin.includes(host)) {
       return res.status(403).json({ error: 'Forbidden' });
     }
   }
@@ -536,7 +539,13 @@ function getAdminHTML(sessionId, nonce) {
 </html>`;
 }
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`Admin panel: http://localhost:${PORT}/admin?key=${ADMIN_KEY}`);
-});
+// Only listen when running directly (not on Vercel)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Admin panel: http://localhost:${PORT}/admin?key=${ADMIN_KEY}`);
+  });
+}
+
+// Export for Vercel serverless
+export default app;
