@@ -1,0 +1,17 @@
+{
+  "name": "noob-number-fetcher",
+  "version": "1.0.0",
+  "description": "Fetch numbers from IPRN API",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.21.0",
+    "helmet": "^8.1.0",
+    "https-proxy-agent": "^7.0.4",
+    "node-fetch": "^3.3.2"
+  }
+}
